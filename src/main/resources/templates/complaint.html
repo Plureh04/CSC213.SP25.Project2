@@ -4,8 +4,11 @@
     <title>Complaint Viewer</title>
 </head>
 <body>
+
 <h2>Complaint ID: <span th:text="${complaint.complaintId}"></span></h2>
+
 <p><strong>Company:</strong> <span th:text="${complaint.company}"></span></p>
+
 <p><strong>Narrative:</strong></p>
 <p th:text="${complaint.narrative}"></p>
 
@@ -21,6 +24,18 @@
 </ul>
 
 <hr/>
+
+<!-- ✅ Jump To box -->
+<form method="get" action="/complaint">
+    <label for="indexInput">Jump to complaint #:</label>
+    <input type="text" name="index" id="indexInput" />
+    <button type="submit">Go</button>
+</form>
+
+<!-- ✅ Error message display -->
+<p th:if="${error != null}" th:text="${error}" style="color: red;"></p>
+
+<!-- Navigation links -->
 <a th:href="@{|/complaint?index=${prevIndex}|}">⬅ Previous</a> |
 <a th:href="@{|/complaint?index=${nextIndex}|}">Next ➡</a>
 
