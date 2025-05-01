@@ -36,4 +36,26 @@ public class ComplaintController {
 
         return "complaint"; // ← This maps to complaint.html
     }
+
+    @GetMapping("/search")
+    public String searchComplaints(@RequestParam(required = false) String company, Model model) {
+        if (company == null || company.trim().isEmpty()) {
+            model.addAttribute("error", "Please enter a company name.");
+            return "search";
+        }
+
+        List<Complaint> searchResults = complaints.stream()
+                .filter(c -> c.getCompany() != null &&
+                        c.getCompany().toLowerCase().contains(company.toLowerCase()))
+                .toList();
+
+        if (searchResults.isEmpty()) {
+            model.addAttribute("error", "No complaints found for that company.");
+        } else {
+            model.addAttribute("searchResults", searchResults);
+        }
+
+        model.addAttribute("companySearch", company);
+        return "search";
+    }
 }
