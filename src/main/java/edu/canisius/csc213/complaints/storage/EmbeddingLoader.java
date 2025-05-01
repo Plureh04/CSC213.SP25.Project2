@@ -20,8 +20,30 @@ public class EmbeddingLoader {
      * @throws IOException if the file cannot be read or parsed
      */
     public static Map<Long, double[]> loadEmbeddings(InputStream jsonlStream) throws IOException {
-        // TODO: Implement parsing of JSONL to extract complaintId and embedding
-        return new HashMap<>();
+        Map<Long, double[]> embeddings = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(jsonlStream))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty()) continue; // skip blank lines
+
+                try {
+                    Map<String, Object> obj = mapper.readValue(line, Map.class);
+                    Long id = ((Number) obj.get("complaintId")).longValue();
+                    List<?> list = (List<?>) obj.get("embedding");
+                    double[] vector = list.stream().mapToDouble(e -> ((Number) e).doubleValue()).toArray();
+                    embeddings.put(id, vector);
+                } catch (Exception e) {
+                    System.err.println("Skipping invalid JSON line: " + line);
+                }
+            }
+        }
+
+        return embeddings;
     }
+
+
 
 }
